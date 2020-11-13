@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.kotlin_blackjack_v2.R
 
 class NotificationsFragment : Fragment() {
-
+    // EXTRA
     private lateinit var notificationsViewModel: NotificationsViewModel
 
     override fun onCreateView(
