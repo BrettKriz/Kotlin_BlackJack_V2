@@ -27,9 +27,13 @@ class HomeFragment : Fragment() {
 
     lateinit var ET_Name: EditText
     lateinit var ET_MinBet: EditText
+
     lateinit var TV_CashM: TextView
+
     lateinit var TOG_UseCash: Switch
+
     lateinit var B_GotoTable: Button
+    lateinit var B_Reset: Button
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -45,9 +49,21 @@ class HomeFragment : Fragment() {
 
         ET_Name = root.findViewById<EditText>(R.id.et_PlayerName)
         ET_MinBet = root.findViewById<EditText>(R.id.et_MinBet)
+
         TV_CashM = root.findViewById<TextView>(R.id.tv_Cash_Menu)
         TOG_UseCash = root.findViewById<Switch>(R.id.tog_UseCash)
+
         B_GotoTable = root.findViewById<Button>(R.id.b_gotoGame) // Goto Table Fragment
+        B_Reset = root.findViewById<Button>(R.id.b_ResetMoney)
+
+        println("[i] Setting click listeners so we dont crash over scope somehow")
+        B_GotoTable.setOnClickListener {
+            doGotoTable()
+        }
+
+        B_Reset.setOnClickListener {
+            doReset()
+        }
 
         SharedVM._Cash.observe(viewLifecycleOwner, Observer {
             // On cash change
@@ -135,12 +151,19 @@ class HomeFragment : Fragment() {
     }
 
     fun clickGotoTable(view: View){
+        doGotoTable()
+    }
+    fun doGotoTable(){
         updateSHARED()
 
         findNavController().navigate(R.id.navigation_dashboard)
     }
 
     fun clickReset(view: View){
+        doReset()
+    }
+
+    fun doReset(){
         println("[i] Reseting money to Minbet")
 
         // Reset money

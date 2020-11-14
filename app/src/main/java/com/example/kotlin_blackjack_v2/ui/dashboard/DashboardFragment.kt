@@ -43,13 +43,9 @@ class DashboardFragment : Fragment() {
     lateinit var TV_CPlayer: TextView
     lateinit var TV_CDealer: TextView
     lateinit var TV_Cash: TextView // At table
-    lateinit var TV_CashM: TextView // At menu
     lateinit var TV_Name: TextView
 
     lateinit var ET_CurBet: EditText
-    lateinit var ET_MinBet:EditText
-
-    lateinit var TOG_UseCash:Switch
 
     // Create resource tables
     val AllSuits = listOf("Diamonds", "Clubs", "Hearts", "Spades")
@@ -61,8 +57,8 @@ class DashboardFragment : Fragment() {
     class Card(val index:Int, val value:Int, val Suit:Int, var Holder:Int) // 0 = deck, 2 = player, 1 = dealer
 
     lateinit var Deck: Array<Card>
-    var Hand_Player: Array<Card?> = arrayOfNulls<Card>(13)
-    var Hand_Dealer: Array<Card?> =  arrayOfNulls<Card>(13)
+    lateinit var Hand_Player: Array<Card?>
+    lateinit var Hand_Dealer: Array<Card?>
 
 
     override fun onCreateView(
@@ -81,12 +77,13 @@ class DashboardFragment : Fragment() {
             println("[i] Initializing the Table")
             isInitd = true
 
-            createDeck()
+
 
             // Start the game with reset
             println("[i] INIT done, resetting Game state")
         }
 
+        createDeck()
 
         B_Hit = root.findViewById<Button>(R.id.b_GHit)
         B_Double = root.findViewById<Button>(R.id.b_GDouble)
@@ -96,13 +93,10 @@ class DashboardFragment : Fragment() {
         TV_CPlayer = root.findViewById<TextView>(R.id.tv_PlayerCards)
         TV_CDealer = root.findViewById<TextView>(R.id.tv_DealerCards)
         TV_Cash = root.findViewById<TextView>(R.id.tv_Cash_Table)
-        TV_CashM = root.findViewById<TextView>(R.id.tv_Cash_Menu)
         TV_Name = root.findViewById<TextView>(R.id.tv_Name)
 
         ET_CurBet  = root.findViewById<EditText>(R.id.et_CurBet)
-        ET_MinBet  = root.findViewById<EditText>(R.id.et_MinBet)
-        TV_CashM = root.findViewById<TextView>(R.id.tv_Cash_Menu)
-        TOG_UseCash = root.findViewById<Switch>(R.id.tog_UseCash)
+
         println("[i] Building element vars OK ")
 
         println("Buttons")
@@ -115,19 +109,31 @@ class DashboardFragment : Fragment() {
         println("IsNull? " + (TV_CPlayer == null))
         println("IsNull? " + (TV_CDealer == null))
         println("IsNull? " + (TV_Cash == null))
-        println("IsNull? " + (TV_CashM == null))
         println("IsNull? " + (TV_Name == null))
 
         println("Edit Text")
         println("IsNull? " + (ET_CurBet  == null))
-        println("IsNull? " + (ET_MinBet  == null))
-        println("IsNull? " + (TV_CashM == null))
 
-        println("Switchs")
-        println("IsNull? " + (TOG_UseCash == null))
+        println("[i] Setting click listeners so we dont crash over scope somehow")
+        B_Hit.setOnClickListener {
+            doHit(true)
+        }
 
-        // Correct logic
-        println("[i] Correct logic -> Reset Cash ")
+        B_Double.setOnClickListener {
+            doDouble()
+        }
+
+        B_Stay.setOnClickListener {
+            doStay(true)
+        }
+
+        TV_Main.setOnClickListener {
+            // When the round ends, click
+            clickMain(it)
+        }
+
+
+        println("[i] Defining observers")
 
         SharedVM._Cash.observe(viewLifecycleOwner, Observer {
             // On cash change
@@ -154,6 +160,8 @@ class DashboardFragment : Fragment() {
 
         })
 
+        // Correct logic
+        println("[i] Correct logic -> Reset Game ")
         resetGame()
         println("[i] onCreate Complete!")
 
@@ -176,10 +184,10 @@ class DashboardFragment : Fragment() {
             val i4 = 3 + x
             println("[i] Creating cards @ index $i1 to $i4")
 
-            Deck.plus(Card(i1, x + 1, 0, HOLDER_NONE))
-            Deck.plus(Card(i2, x + 1, 1, HOLDER_NONE))
-            Deck.plus(Card(i3, x + 1, 2, HOLDER_NONE))
-            Deck.plus(Card(i4, x + 1, 3, HOLDER_NONE))
+            Deck = Deck.plus(Card(i1, x + 1, 0, HOLDER_NONE))
+            Deck = Deck.plus(Card(i2, x + 1, 1, HOLDER_NONE))
+            Deck = Deck.plus(Card(i3, x + 1, 2, HOLDER_NONE))
+            Deck = Deck.plus(Card(i4, x + 1, 3, HOLDER_NONE))
         }
     }
 
@@ -297,6 +305,10 @@ class DashboardFragment : Fragment() {
         // and give it a side of the table
         var temp: Card
 
+        if (Deck == null){
+            println("[!] Deck is null, returning Joker Card")
+            return Card(-1,-1,0, HOLDER_NONE)
+        }
         // Get a random card thats not in a hand
         do {
             temp = Deck.random()!!
@@ -306,23 +318,23 @@ class DashboardFragment : Fragment() {
         // Add the card to the Hand
         if (side) {
             temp.Holder = HOLDER_PLAYER
-            Hand_Player.plus(temp)
+            Hand_Player = Hand_Player.plus(temp)
             // Update card string
             TV_CPlayer.setText(cardToStr(temp))
         } else {
             temp.Holder = HOLDER_DEALER
-            Hand_Dealer.plus(temp)
+            Hand_Dealer = Hand_Dealer.plus(temp)
         }
 
         return temp
     }
 
     fun resetGame(){
-        // Rest sate to a start
+        // Rest the sate to a start
         BetDoubled = false
 
-        Hand_Dealer = arrayOfNulls<Card>(13)
-        Hand_Player = arrayOfNulls<Card>(13)
+        Hand_Dealer = arrayOfNulls<Card?>(13)
+        Hand_Player = arrayOfNulls<Card?>(13)
 
         println("Clearing the deck")
         for (x in 0 until Deck.size){
@@ -333,9 +345,10 @@ class DashboardFragment : Fragment() {
         // Dealers Hand
         var damt = 0
         val peak: Card = drawCardFromDeck(false)
+        val hidden: Card = drawCardFromDeck(false)
         TV_CDealer.setText(cardToStr(peak)) // Set the peak card
 
-        drawCardFromDeck(false)
+
         damt = getDealerTotal()
 
         // Players Hand
@@ -381,8 +394,17 @@ class DashboardFragment : Fragment() {
         var total = 0
         var str:String = "None"
 
+        if ( null == Hand_Player || Hand_Player.isEmpty()){
+            return total
+        }
+
+        val lim = Hand_Player.count()
+        val siz = Hand_Player.size
+        println("#Hand_PLAYER: " + lim.toString() + " vs Size: " + siz.toString())
+
         for (x in 0 until Hand_Player.count()){
-            val cur: Card? = Hand_Player[x]!!
+            println("HP#" + x)
+            val cur: Card? = Hand_Player[x] ?: break
 
             if (cur != null) {
                 if (str.length < 1) {
@@ -394,7 +416,6 @@ class DashboardFragment : Fragment() {
                 total = total + Math.max(cur.value, GAME_SCORE_CEIL)
             }
         }
-
         TV_CPlayer.text = str.toString() // Players hand
 
         return total
@@ -411,9 +432,11 @@ class DashboardFragment : Fragment() {
         if (BetDoubled){
             s = 2
         }
+
         if (b.length > 0){
             bi = b.toInt()
         }
+
         if (m != null) {
             bi = Math.max(bi, m)
         } else {
@@ -429,8 +452,19 @@ class DashboardFragment : Fragment() {
         // Calculate dealers cards
         var total = 0
 
-        for (x in 0 until Hand_Dealer.count()){
-            val cur: Card? = Hand_Dealer[x]!!
+        if (null == Hand_Dealer || Hand_Dealer.isEmpty()){
+            return total
+        }
+
+
+        val lioc = Hand_Dealer.lastIndex
+        val lim = Hand_Dealer.count()
+        val siz = Hand_Dealer.size
+        println("#Hand_DEALER: " + lim.toString() + " vs Size: " + siz.toString() + lioc.toString())
+
+        for (x in 0 until lim){
+            println("HD#" + x)
+            val cur: Card? = Hand_Dealer[x] ?: break
             if (cur != null){
                 total = total + Math.max( cur.value, GAME_SCORE_CEIL )
             }
@@ -443,8 +477,17 @@ class DashboardFragment : Fragment() {
         // Get the string for ALL of the dealers cards
         var str:String = "None"
 
-        for (x in 0 until Hand_Dealer.size){
-            val cur: Card = Hand_Dealer[x]!!
+        if (null == Hand_Dealer || Hand_Dealer.isEmpty()){
+            return str
+        }
+
+        val lim = Hand_Dealer.count()
+        val siz = Hand_Dealer.size
+        println("#Hand_DEALER: " + lim.toString() + " vs Size: " + siz.toString())
+
+        for (x in 0 until lim){
+            println("HDA#" + x)
+            val cur: Card = Hand_Dealer[x] ?: break
 
             if (str.length < 1) {
                 str = cardToStr(cur)
@@ -542,6 +585,7 @@ class DashboardFragment : Fragment() {
     }
 
     fun clickMain(view: View){
+        // Clicked the center text of a win or loss
         // Reset for another round
         // Or boot player
         resetGame()
@@ -556,16 +600,19 @@ class DashboardFragment : Fragment() {
         doHit(true)
 
     }
+
     fun clickDouble(view: View){
         // Double the bet
         doDouble()
 
     }
+
     fun clickStay(view: View){
         // Stay and end dealing
         doStay(true)
 
     }
+
     fun clickGotoMain(view: View){
         // Exit to the main menu
         doGotoMain()
@@ -592,7 +639,7 @@ class DashboardFragment : Fragment() {
 
     }
 
-    public fun doGotoMain(){
+    fun doGotoMain(){
         // Change fragment
         println("Leaving table...")
         //TV_CashM!!.setText("$ " + Cash)

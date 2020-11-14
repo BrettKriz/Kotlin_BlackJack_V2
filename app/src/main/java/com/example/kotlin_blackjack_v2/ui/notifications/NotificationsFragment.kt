@@ -26,6 +26,8 @@ class NotificationsFragment : Fragment() {
         notificationsViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
+
+        println("~\n\n~\n\n~\n\n~")
         return root
     }
 }
