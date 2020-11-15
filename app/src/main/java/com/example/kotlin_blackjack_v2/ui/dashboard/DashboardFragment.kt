@@ -72,17 +72,6 @@ class DashboardFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
         //val textView: TextView = root.findViewById(R.id.text_dashboard)
 
-        // Init Game
-        if (isInitd == false) {
-            println("[i] Initializing the Table")
-            isInitd = true
-
-
-
-            // Start the game with reset
-            println("[i] INIT done, resetting Game state")
-        }
-
         createDeck()
 
         B_Hit = root.findViewById<Button>(R.id.b_GHit)
@@ -130,6 +119,7 @@ class DashboardFragment : Fragment() {
         TV_Main.setOnClickListener {
             // When the round ends, click
             clickMain(it)
+            TV_Main.visibility = View.INVISIBLE
         }
 
 
@@ -163,6 +153,16 @@ class DashboardFragment : Fragment() {
         // Correct logic
         println("[i] Correct logic -> Reset Game ")
         resetGame()
+
+        // Init Game
+        if (isInitd == false) {
+            println("[i] Initializing the Table")
+            isInitd = true
+
+            // Start the game with reset
+            println("[i] INIT done, resetting Game state")
+        }
+
         println("[i] onCreate Complete!")
 
         return root
@@ -265,7 +265,7 @@ class DashboardFragment : Fragment() {
         // A hang state which unlocks the central text
         println("Hiding buttons, unhiding text with onClick")
 
-        TV_Main.visibility = View.VISIBLE
+
         var mstr = "Tie Game"
 
         if (amt > 0) {
@@ -285,11 +285,13 @@ class DashboardFragment : Fragment() {
             mstr = "You're broke!"
         }
 
+        TV_Main.visibility = View.VISIBLE
         TV_Main.setText(mstr)
 
         B_Double.visibility = View.INVISIBLE
         B_Hit.visibility = View.INVISIBLE
         B_Stay.visibility = View.INVISIBLE
+
     }
 
     fun checkGameStatus(DMove: Boolean){
@@ -397,8 +399,9 @@ class DashboardFragment : Fragment() {
         drawCardFromDeck(true)
         pamt = getPlayerTotal()
 
-        if (damt >= 21 || pamt >= 21){
-            checkGameStatus(damt < 16)
+
+        if (isInitd  && (damt >= 21 || pamt >= 21)) {
+           checkGameStatus(damt < 16)
             return
         }
 
@@ -406,6 +409,7 @@ class DashboardFragment : Fragment() {
         B_Double.visibility = View.VISIBLE
         B_Hit.visibility = View.VISIBLE
         B_Stay.visibility = View.VISIBLE
+
         TV_Main.visibility = View.INVISIBLE
     }
 
@@ -413,14 +417,14 @@ class DashboardFragment : Fragment() {
         // Add money and change status
         println("[i] Win game")
 
-        val amt = setCash(getTotalBet() * 2)
+        val amt = setCash(Math.max(getTotalBet() * 2, 100 * 2)) // @@@ Min Bet needs clamping
     }
 
     fun game_Lose(){
         // Subtract money and change status
         println("[i] Lose game")
 
-        val amt = setCash(-1 * getTotalBet())
+        val amt = setCash(Math.min(-1 * getTotalBet() , 100 * -1)) // @@@ Min Bet needs clamping
     }
 
     fun game_Tie(){
@@ -432,7 +436,7 @@ class DashboardFragment : Fragment() {
         // Sum the cards
 
         var total = 0
-        var str:String = "None"
+        var str:String = ""
 
         if ( null == Hand_Player || Hand_Player.isEmpty()){
             return total
@@ -456,6 +460,11 @@ class DashboardFragment : Fragment() {
                 total = total + Math.max(cur.value, GAME_SCORE_CEIL)
             }
         }
+
+        if (str.length < 1) {
+            str = "None"
+        }
+
         TV_CPlayer.text = str.toString() // Players hand
 
         return total
@@ -474,7 +483,11 @@ class DashboardFragment : Fragment() {
         }
 
         if (b.length > 0){
-            bi = b.toInt()
+            try{
+                bi = b.toInt()
+            } catch(e : NumberFormatException){
+                bi = m
+            }
         }
 
         if (m != null) {
@@ -543,7 +556,7 @@ class DashboardFragment : Fragment() {
         // Grab the current value
         // for Min Bet
 
-        var arg = getMinBet()
+        var arg = SharedVM.MinBet ?: 100
         var ans: Int = 0
 
         ans = arg // Removed alot of test code here
