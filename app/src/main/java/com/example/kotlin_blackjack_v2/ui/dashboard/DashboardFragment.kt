@@ -57,8 +57,8 @@ class DashboardFragment : Fragment() {
     class Card(val index:Int, val value:Int, val Suit:Int, var Holder:Int) // 0 = deck, 2 = player, 1 = dealer
 
     lateinit var Deck: Array<Card>
-    lateinit var Hand_Player: Array<Card?>
-    lateinit var Hand_Dealer: Array<Card?>
+    var Hand_Player: MutableList<Card> = mutableListOf<Card>()
+    var Hand_Dealer: MutableList<Card> = mutableListOf<Card>()
 
 
     override fun onCreateView(
@@ -173,22 +173,60 @@ class DashboardFragment : Fragment() {
         // and create the suits as well
         println("[i] Creating the Deck!")
 
-        Deck = emptyArray<Card>() // It really doesnt like null fill
-
-        for (x in 0 until 13){
-            // Make all 4
-
-            val i1 = 0 + x
-            val i2 = 1 + x
-            val i3 = 2 + x
-            val i4 = 3 + x
-            println("[i] Creating cards @ index $i1 to $i4")
-
-            Deck = Deck.plus(Card(i1, x + 1, 0, HOLDER_NONE))
-            Deck = Deck.plus(Card(i2, x + 1, 1, HOLDER_NONE))
-            Deck = Deck.plus(Card(i3, x + 1, 2, HOLDER_NONE))
-            Deck = Deck.plus(Card(i4, x + 1, 3, HOLDER_NONE))
-        }
+        Deck = arrayOf<Card>( // Why not, cards dont change
+                Card(1 , 2 , 0, HOLDER_NONE),
+                Card(2 , 2 , 1, HOLDER_NONE),
+                Card(3 , 2 , 2, HOLDER_NONE),
+                Card(4 , 2 , 3, HOLDER_NONE),
+                Card(5 , 3 , 0, HOLDER_NONE),
+                Card(6 , 3 , 1, HOLDER_NONE),
+                Card(7 , 3 , 2, HOLDER_NONE),
+                Card(8 , 3 , 3, HOLDER_NONE),
+                Card(9 , 4 , 0, HOLDER_NONE),
+                Card(10 , 4 , 1, HOLDER_NONE),
+                Card(11 , 4 , 2, HOLDER_NONE),
+                Card(12 , 4 , 3, HOLDER_NONE),
+                Card(13 , 5 , 0, HOLDER_NONE),
+                Card(14 , 5 , 1, HOLDER_NONE),
+                Card(15 , 5 , 2, HOLDER_NONE),
+                Card(16 , 5 , 3, HOLDER_NONE),
+                Card(17 , 6 , 0, HOLDER_NONE),
+                Card(18 , 6 , 1, HOLDER_NONE),
+                Card(19 , 6 , 2, HOLDER_NONE),
+                Card(20 , 6 , 3, HOLDER_NONE),
+                Card(21 , 7 , 0, HOLDER_NONE),
+                Card(22 , 7 , 1, HOLDER_NONE),
+                Card(23 , 7 , 2, HOLDER_NONE),
+                Card(24 , 7 , 3, HOLDER_NONE),
+                Card(25 , 8 , 0, HOLDER_NONE),
+                Card(26 , 8 , 1, HOLDER_NONE),
+                Card(27 , 8 , 2, HOLDER_NONE),
+                Card(28 , 8 , 3, HOLDER_NONE),
+                Card(29 , 9 , 0, HOLDER_NONE),
+                Card(30 , 9 , 1, HOLDER_NONE),
+                Card(31 , 9 , 2, HOLDER_NONE),
+                Card(32 , 9 , 3, HOLDER_NONE),
+                Card(33 , 10 , 0, HOLDER_NONE),
+                Card(34 , 10 , 1, HOLDER_NONE),
+                Card(35 , 10 , 2, HOLDER_NONE),
+                Card(36 , 10 , 3, HOLDER_NONE),
+                Card(37 , 11 , 0, HOLDER_NONE),
+                Card(38 , 11 , 1, HOLDER_NONE),
+                Card(39 , 11 , 2, HOLDER_NONE),
+                Card(40 , 11 , 3, HOLDER_NONE),
+                Card(41 , 12 , 0, HOLDER_NONE),
+                Card(42 , 12 , 1, HOLDER_NONE),
+                Card(43 , 12 , 2, HOLDER_NONE),
+                Card(44 , 12 , 3, HOLDER_NONE),
+                Card(45 , 13 , 0, HOLDER_NONE),
+                Card(46 , 13 , 1, HOLDER_NONE),
+                Card(47 , 13 , 2, HOLDER_NONE),
+                Card(48 , 13 , 3, HOLDER_NONE),
+                Card(49 , 14 , 0, HOLDER_NONE),
+                Card(50 , 14 , 1, HOLDER_NONE),
+                Card(51 , 14 , 2, HOLDER_NONE),
+                Card(52 , 14 , 3, HOLDER_NONE)
+            )
     }
 
     fun setCash(amt: Int):Int{
@@ -317,13 +355,15 @@ class DashboardFragment : Fragment() {
         // Mark as held
         // Add the card to the Hand
         if (side) {
+            // PLAYER
             temp.Holder = HOLDER_PLAYER
-            Hand_Player = Hand_Player.plus(temp)
+            Hand_Player.add(temp)
             // Update card string
             TV_CPlayer.setText(cardToStr(temp))
         } else {
+            // DEALER
             temp.Holder = HOLDER_DEALER
-            Hand_Dealer = Hand_Dealer.plus(temp)
+            Hand_Dealer.add(temp)
         }
 
         return temp
@@ -333,8 +373,8 @@ class DashboardFragment : Fragment() {
         // Rest the sate to a start
         BetDoubled = false
 
-        Hand_Dealer = arrayOfNulls<Card?>(13)
-        Hand_Player = arrayOfNulls<Card?>(13)
+        Hand_Dealer.clear()
+        Hand_Player.clear()
 
         println("Clearing the deck")
         for (x in 0 until Deck.size){
