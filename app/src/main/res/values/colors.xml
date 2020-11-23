@@ -20,4 +20,11 @@
     <color name="custom_offwhite">#fafafa</color>
     <color name="custom_offblack">#050505</color>
     <color name="custom_gray">#808080</color>
+
+    <color name ="b_double">#1CB822</color>
+    <color name="b_hit">#FF5722</color>
+    <color name="b_stay">#00BCD4</color>
+
+    <color name="b_gotoGame">#4CAF50</color>
+    <color name="b_resetMoney">#FF0000</color>
 </resources>

@@ -674,6 +674,7 @@ class DashboardFragment : Fragment() {
     fun doHit(side: Boolean){
         // Add a card to the hand
         drawCardFromDeck(side)
+
         if (isBust(true)) {
             checkGameStatus(false)
         }
@@ -686,7 +687,7 @@ class DashboardFragment : Fragment() {
     }
 
     fun doDouble(){
-        // Dealer cant bet
+        // Dealer cant double bet, no side
         BetDoubled = true
         B_Double!!.visibility = View.INVISIBLE
 

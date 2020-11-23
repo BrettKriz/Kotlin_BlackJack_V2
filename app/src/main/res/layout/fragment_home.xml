@@ -167,7 +167,7 @@
         android:text="RESET MONEY"
         android:textColorHighlight="#E91E63"
         android:textSize="18sp"
-        app:backgroundTint="#FF0000"
+        app:backgroundTint="@color/b_resetMoney"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_Cash_Menu"
@@ -187,7 +187,7 @@
         android:text="Goto Game"
         android:textColorHighlight="#8BC34A"
         android:textSize="18sp"
-        app:backgroundTint="#4CAF50"
+        app:backgroundTint="@color/b_gotoGame"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_Cash_Menu" />
