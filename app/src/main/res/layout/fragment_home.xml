@@ -160,6 +160,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:enabled="true"
@@ -169,14 +171,17 @@
         android:textSize="18sp"
         app:backgroundTint="@color/b_resetMoney"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintEnd_toStartOf="@+id/b_gotoGame"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_Cash_Menu"
-        app:layout_constraintVertical_bias="0.75" />
+        app:layout_constraintVertical_bias="0.45" />
 
     <Button
         android:id="@+id/b_gotoGame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
@@ -190,5 +195,7 @@
         app:backgroundTint="@color/b_gotoGame"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_Cash_Menu" />
+        app:layout_constraintStart_toEndOf="@+id/b_ResetMoney"
+        app:layout_constraintTop_toBottomOf="@+id/tv_Cash_Menu"
+        app:layout_constraintVertical_bias="0.45" />
     </androidx.constraintlayout.widget.ConstraintLayout>

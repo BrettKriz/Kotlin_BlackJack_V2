@@ -113,6 +113,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginBottom="32dp"
         android:background="@color/b_double"
         android:text="x2 B E T"
@@ -147,6 +149,8 @@
         android:id="@+id/b_GStay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="129dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
@@ -163,7 +167,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/b_GHit"
         app:layout_constraintTop_toBottomOf="@+id/tv_PlayerCards"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.95" />
 
     <TextView
         android:id="@+id/textView10"
